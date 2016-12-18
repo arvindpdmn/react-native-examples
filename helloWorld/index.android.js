@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 
-export default class helloWorld extends Component {
+export default class HelloWorldApp extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('helloWorld', () => helloWorld);
+AppRegistry.registerComponent('helloWorld', () => HelloWorldApp);

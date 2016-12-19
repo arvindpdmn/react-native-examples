@@ -71,6 +71,7 @@ export default class HelloWorldApp extends Component {
 
         <View>
           <Blink text='I love to blink' style={styles.salmon} />
+          <Blink text='I love to blink in blue' style={{color: 'blue'}} />
         </View>
       </View>
     );

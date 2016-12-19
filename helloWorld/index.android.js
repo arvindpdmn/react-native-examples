@@ -12,7 +12,8 @@ import {
   View,
   Image,
   TextInput,
-  ScrollView
+  ScrollView,
+  ListView
 } from 'react-native';
 
 class Greeting extends Component {
@@ -43,6 +44,29 @@ class Blink extends Component {
   }
 }
 
+class ListViewBasics extends Component {
+  // Initialize the hardcoded data
+  constructor(props) {
+    super(props);
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.state = {
+      dataSource: ds.cloneWithRows([
+        'John', 'Joel', 'James', 'Jimmy', 'Jackson', 'Jillian', 'Julie', 'Devin'
+      ])
+    };
+  }
+  render() {
+    return (
+      <View style={{flex: 1, paddingTop: 22}}>
+        <ListView
+          dataSource={this.state.dataSource}
+          renderRow={(rowData) => <Text>{rowData}</Text>}
+        />
+      </View>
+    );
+  }
+}
+
 export default class HelloWorldApp extends Component {
   constructor(props) {
     super(props);
@@ -56,6 +80,7 @@ export default class HelloWorldApp extends Component {
     return (
     <ScrollView>
       <View style={styles.container}>
+  
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>
@@ -93,6 +118,9 @@ export default class HelloWorldApp extends Component {
             {this.state.inputText.split(' ').map((word) => word && '🍕').join(' ')}
           </Text>
         </View>
+
+        <ListViewBasics />
+  
       </View>
     </ScrollView>
     );

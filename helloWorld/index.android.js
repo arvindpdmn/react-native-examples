@@ -70,9 +70,28 @@ class ListViewBasics extends Component {
 export default class HelloWorldApp extends Component {
   constructor(props) {
     super(props);
-    this.state = {inputText: ''};
+    this.state = {inputText: '', movies: ''};
   }
-  
+
+  getMovies() {
+    return fetch('https://facebook.github.io/react-native/movies.json')
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseJson) => {
+        let movies = JSON.stringify(responseJson.movies);
+        this.setState({movies});
+        return responseJson;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  componentDidMount() {
+    this.getMovies();
+  }
+
   render() {
     let pic = {
       uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
@@ -118,6 +137,8 @@ export default class HelloWorldApp extends Component {
             {this.state.inputText.split(' ').map((word) => word && '🍕').join(' ')}
           </Text>
         </View>
+
+        <Text>{this.state.movies}</Text>
 
         <ListViewBasics />
   

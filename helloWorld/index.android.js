@@ -10,7 +10,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
+  TextInput,
+  ScrollView
 } from 'react-native';
 
 class Greeting extends Component {
@@ -42,11 +44,17 @@ class Blink extends Component {
 }
 
 export default class HelloWorldApp extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {inputText: ''};
+  }
+  
   render() {
     let pic = {
       uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
     };
     return (
+    <ScrollView>
       <View style={styles.container}>
         <Text style={styles.welcome}>
           Welcome to React Native!
@@ -73,17 +81,34 @@ export default class HelloWorldApp extends Component {
           <Blink text='I love to blink' style={styles.salmon} />
           <Blink text='I love to blink in blue' style={{color: 'blue'}} />
         </View>
+
+        <View>
+          <Image source={require('./img/favicon.png')} />
+          <TextInput
+            style={{height: 40, width: 300}}
+            placeholder="Type here to translate!"
+            onChangeText={(inputText) => this.setState({inputText})}
+          />
+          <Text style={{padding: 10, fontSize: 42}}>
+            {this.state.inputText.split(' ').map((word) => word && '🍕').join(' ')}
+          </Text>
+        </View>
       </View>
+    </ScrollView>
     );
   }
 }
 
+
+// paddingTop pushes content down but we use ScrollView to scroll down
+// Use of marginTop instead will not push children down, but hide them!
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    paddingTop: 400
   },
   welcome: {
     fontSize: 20,

@@ -9,28 +9,17 @@ import {
 export default class LosantClient extends Component {
     constructor(props) {
         super(props);
-        this.state = { temperature: 10 }
+        this.state = { temperature: '' }
     }
 
-    componentDidMount() {
-        var api = require('losant-rest');
-        var client = api.createClient();
+    tick() {
+        let temperature = 25 + 1.2*Math.random();
+        this.setState({temperature});
 
-        client.auth.authenticateDevice({ credentials: {
-                deviceId: this.props.deviceId,
-                key: this.props.appKey,
-                secret: this.props.appSecret
-        }}).then((response) => {
-            client.setOption('accessToken', response.token);
-            var appId = response.applicationId;
-            let temperature = 25 + 1.2*Math.random();
-            var state = { data: {temperature} };
-            this.setState({temperature});
-            return client.device.sendState({
-                deviceId: this.props.deviceId,
-                applicationId: appId,
-                deviceState: state
-            });
+        this.client.device.sendState({
+            deviceId: this.props.deviceId,
+            applicationId: this.appID,
+            deviceState: { data: {temperature} }
         })
         .then((response) => {
             console.log(response); // { success: true }
@@ -38,6 +27,31 @@ export default class LosantClient extends Component {
         .catch((error) => {
             console.error(error);
         });
+    }
+
+    componentDidMount() {
+        var api = require('losant-rest');
+        this.client = api.createClient();
+
+        this.client.auth.authenticateDevice({ credentials: {
+                deviceId: this.props.deviceId,
+                key: this.props.appKey,
+                secret: this.props.appSecret
+        }}).then((response) => {
+            this.client.setOption('accessToken', response.token);
+            this.appID = response.applicationId;
+            this.timerID = setInterval(
+                () => this.tick(),
+                1000
+            );
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
     }
 
     render() {

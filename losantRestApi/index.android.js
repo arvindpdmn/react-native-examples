@@ -12,6 +12,33 @@ import {
   View
 } from 'react-native';
 
+
+var api = require('losant-rest');
+
+var client = api.createClient();
+
+client.auth.authenticateDevice({ credentials: {
+  deviceId: 'xxx',
+  key: 'xxx',
+  secret: 'xxx'
+}}).then(function (response) {
+  client.setOption('accessToken', response.token);
+  var appId = response.applicationId;
+
+  var state = { data: { temperature: 100*Math.random() } };
+  return client.device.sendState({
+    deviceId: 'xxx',
+    applicationId: appId,
+    deviceState: state
+  });
+})
+.then(function (response) {
+  console.log(response); // { success: true }
+})
+.catch(function (error) {
+  console.error(error);
+});
+
 export default class losantRestApi extends Component {
   render() {
     return (

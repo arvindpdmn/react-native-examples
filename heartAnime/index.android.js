@@ -23,29 +23,22 @@ function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-var Heart = React.createClass({
-    render: function() {
-        return (
-            <View {...this.props} style={[styles.heart, this.props.style]}>
-                <View style={[styles.leftHeart, styles.heartShape]} />
-                <View style={[styles.rightHeart, styles.heartShape]} />
-            </View> 
-        )  
-    }
-});
+function Heart(props) {
+    return (
+        <View {...props} style={[styles.heart, props.style]}>
+            <View style={[styles.leftHeart, styles.heartShape]} />
+            <View style={[styles.rightHeart, styles.heartShape]} />
+        </View> 
+    )  
+}
 
-var AnimatedHeart = React.createClass({
-  getDefaultProps: function() {
-    return {
-      onComplete: function() {}
-    };
-  },
-  getInitialState: function() {
-    return {
-      position: new Animated.Value(0)
-    };
-  },
-  componentWillMount: function() {
+class AnimatedHeart extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {position: new Animated.Value(0)}
+  }
+
+  componentWillMount() {
     this._yAnimation = this.state.position.interpolate({
       inputRange: [NEGATIVE_END_Y, 0],
       outputRange: [ANIMATION_END_Y, 0]
@@ -71,14 +64,16 @@ var AnimatedHeart = React.createClass({
       inputRange: [0, ANIMATION_END_Y/4, ANIMATION_END_Y/3, ANIMATION_END_Y/2, ANIMATION_END_Y],
       outputRange: ['0deg', '-2deg', '0deg', '2deg', '0deg']
     });
-  },
-  componentDidMount: function() {
+  }
+
+  componentDidMount() {
     Animated.timing(this.state.position, {
       duration: 2000,
       toValue: NEGATIVE_END_Y
     }).start(this.props.onComplete);
-  },
-  getHeartAnimationStyle: function() {
+  }
+
+  getHeartAnimationStyle() {
     return {
       transform: [
         {translateY: this.state.position},
@@ -88,50 +83,57 @@ var AnimatedHeart = React.createClass({
       ],
       opacity: this._opacityAnimation
     }
-  },
-  render: function() {
+  }
+
+  render() {
     return (
         <Animated.View style={[styles.heartWrap, this.getHeartAnimationStyle(), this.props.style]}>
           <Heart />
         </Animated.View>
     )
   }
-})
+}
 
-var App = React.createClass({
-  getInitialState: function() {
-    return {
-      hearts: [] 
-    };
-  },
-  addHeart: function() {
+AnimatedHeart.defaultProps = {
+  onComplete: () => {}
+}
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {hearts: []}
+    this.addHeart = this.addHeart.bind(this);
+    this.removeHeart = this.removeHeart.bind(this);
+  }
+
+  addHeart() {
     startCount += 1;
     this.state.hearts.push({
       id: startCount,
       right: getRandomNumber(50, 150)
     });
     this.setState(this.state);
-  },
-  removeHeart: function(v) {
-    var index = this.state.hearts.findIndex(function(heart) { return heart.id === v});
+  }
+
+  removeHeart(v) {
+    var index = this.state.hearts.findIndex((heart) => heart.id === v);
     this.state.hearts.splice(index, 1);
     this.setState(this.state);
-  },
-  render: function() {
+  }
+
+  render() {
     return (
       <View style={styles.container}>
 				<TouchableWithoutFeedback style={styles.container} onPress={this.addHeart}>
           <View style={styles.container}>
             {
-              this.state.hearts.map(function(v, i) {
-                return (
-                    <AnimatedHeart 
-                      key={v.id}
-                      onComplete={this.removeHeart.bind(this, v.id)}
-                      style={{right: this.state.hearts[i].right}}
-                    />
-                ) 
-              }, this)
+              this.state.hearts.map((v, i) =>
+                <AnimatedHeart 
+                  key={v.id}
+                  onComplete={() => this.removeHeart(v.id)}
+                  style={{right: v.right}}
+                />
+              )
             }
           </View>
         </TouchableWithoutFeedback>
@@ -140,7 +142,7 @@ var App = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

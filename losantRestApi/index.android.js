@@ -12,32 +12,11 @@ import {
   View
 } from 'react-native';
 
+import LosantClient from './LosantClient';
 
-var api = require('losant-rest');
-
-var client = api.createClient();
-
-client.auth.authenticateDevice({ credentials: {
-  deviceId: 'xxx',
-  key: 'xxx',
-  secret: 'xxx'
-}}).then(function (response) {
-  client.setOption('accessToken', response.token);
-  var appId = response.applicationId;
-
-  var state = { data: { temperature: 100*Math.random() } };
-  return client.device.sendState({
-    deviceId: 'xxx',
-    applicationId: appId,
-    deviceState: state
-  });
-})
-.then(function (response) {
-  console.log(response); // { success: true }
-})
-.catch(function (error) {
-  console.error(error);
-});
+var DEVICE_ID = 'xxx';
+var APP_KEY = 'xxx';
+var APP_SECRET = 'xxx';
 
 export default class losantRestApi extends Component {
   render() {
@@ -53,6 +32,7 @@ export default class losantRestApi extends Component {
           Double tap R on your keyboard to reload,{'\n'}
           Shake or press menu button for dev menu
         </Text>
+        <LosantClient deviceId={DEVICE_ID} appKey={APP_KEY} appSecret={APP_SECRET} />
       </View>
     );
   }
